@@ -14,8 +14,9 @@ HEIGHT = 480
 # Path for the background image
 backgrnd_path = "images/background_pong.png"
 
-# Path for the background image
+# Paths for the ball and the paddle images
 ball_path = "images/ball.png"
+paddle_path = "images/paddle.png"
 
 # Ball object
 class Ball(pygame.sprite.Sprite):
@@ -38,6 +39,17 @@ class Ball(pygame.sprite.Sprite):
         if self.rect.top <= 0 or self.rect.bottom >= HEIGHT:
             self.speed[1] = -self.speed[1]
             self.rect.centery += self.speed[1] * time
+
+# Paddle object
+class Paddle(pygame.sprite.Sprite):
+
+    def __init__(self, x):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = load_image(paddle_path, False)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = x # Paddle will move over the y axis
+        self.rect.centery = HEIGHT / 2
+        self.speed = 0.5
 
 # Function which loads an image into the Window
 def load_image(path, transparent):
@@ -62,6 +74,7 @@ def main():
     # Graphic elements
     background = load_image(backgrnd_path, False)
     ball = Ball()
+    paddle_player = Paddle(20)
 
     # Creating clock so the ball moves
     clock = pygame.time.Clock()
@@ -76,6 +89,7 @@ def main():
         ball.refresh(time)
         screen.blit(background, (0, 0))
         screen.blit(ball.image, ball.rect)
+        screen.blit(paddle_player.image, paddle_player.rect)
         pygame.display.flip()
     return 0
 
