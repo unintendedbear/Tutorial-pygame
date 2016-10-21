@@ -60,6 +60,14 @@ class Paddle(pygame.sprite.Sprite):
         if self.rect.bottom <= HEIGHT and pressed_key[K_DOWN]:
             self.rect.centery += self.speed * time
 
+    def ia(self, time, ball):
+        # As CPU: "Is the ball on my side of the table and moving towards me?"
+        if ball.speed[0] >= 0 and ball.rect.centerx >= WIDTH/2:
+            if self.rect.centery < ball.rect.centery:
+                self.rect.centery += self.speed * time
+            else:
+                self.rect.centery -= self.speed * time
+
 # Function which loads an image into the Window
 def load_image(path, transparent):
     try: image = pygame.image.load(path)
@@ -100,6 +108,7 @@ def main():
 
         ball.refresh(time, paddle_player, paddle_CPU)
         paddle_player.move(time, pressed_key)
+        paddle_CPU.ia(time, ball)
         screen.blit(background, (0, 0))
         screen.blit(ball.image, ball.rect)
         screen.blit(paddle_player.image, paddle_player.rect)
