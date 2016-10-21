@@ -83,8 +83,8 @@ class Paddle(pygame.sprite.Sprite):
 def load_image(path, transparent):
     try: image = pygame.image.load(path)
     # Manages error if image cannot be loaded
-    except pygame.error, message:
-        raise SystemExit, message
+    except (pygame.error) as message:
+        raise(message)
     # Converting to inner pygame format (more efficient)
     image = image.convert()
     if transparent:
