@@ -51,6 +51,12 @@ class Paddle(pygame.sprite.Sprite):
         self.rect.centery = HEIGHT / 2
         self.speed = 0.5
 
+    def move(self, time, pressed_key):
+        if self.rect.top >= 0 and pressed_key[K_UP]:
+            self.rect.centery -= self.speed * time
+        if self.rect.bottom <= HEIGHT and pressed_key[K_DOWN]:
+            self.rect.centery += self.speed * time
+
 # Function which loads an image into the Window
 def load_image(path, transparent):
     try: image = pygame.image.load(path)
@@ -82,11 +88,14 @@ def main():
     # Maintains screen opened unless manually closed
     while True:
         time = clock.tick(60)
+        # Whic key is pressed?
+        pressed_key = pygame.key.get_pressed()
         for event in pygame.event.get():
             if event.type == QUIT:
                 sys.exit()
 
         ball.refresh(time)
+        paddle_player.move(time, pressed_key)
         screen.blit(background, (0, 0))
         screen.blit(ball.image, ball.rect)
         screen.blit(paddle_player.image, paddle_player.rect)
