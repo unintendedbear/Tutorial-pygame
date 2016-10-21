@@ -114,6 +114,7 @@ def main():
     ball = Ball()
     paddle_player = Paddle(10)
     paddle_CPU = Paddle(WIDTH - 10)
+    paddle_CPU.speed = 0.45
 
     # Creating clock so the ball moves
     clock = pygame.time.Clock()
