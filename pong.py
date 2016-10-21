@@ -30,7 +30,7 @@ class Ball(pygame.sprite.Sprite):
         self.speed = [0.5, -0.5]
 
     # Controling ball movement
-    def refresh(self, time):
+    def refresh(self, time, paddle_player):
         self.rect.centerx += self.speed[0] * time # Basic physics
         self.rect.centery += self.speed[1] * time
         if self.rect.left <= 0 or self.rect.right >= WIDTH:
@@ -39,6 +39,9 @@ class Ball(pygame.sprite.Sprite):
         if self.rect.top <= 0 or self.rect.bottom >= HEIGHT:
             self.speed[1] = -self.speed[1]
             self.rect.centery += self.speed[1] * time
+        if pygame.sprite.collide_rect(self, paddle_player):
+            self.speed[0] = -self.speed[0]
+            self.rect.centerx += self.speed[0] * time
 
 # Paddle object
 class Paddle(pygame.sprite.Sprite):
@@ -94,7 +97,7 @@ def main():
             if event.type == QUIT:
                 sys.exit()
 
-        ball.refresh(time)
+        ball.refresh(time, paddle_player)
         paddle_player.move(time, pressed_key)
         screen.blit(background, (0, 0))
         screen.blit(ball.image, ball.rect)
