@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 """example1.py"""
 
-# Import pygame
 import pygame
-from pygame.locals import *
 import sys
+from random import randint
+from pygame.locals import *
 
 # Window width and height, they'll be constants for now
 WIDTH = 640
@@ -31,26 +31,50 @@ class Ball(pygame.sprite.Sprite):
         self.rect.centerx = WIDTH / 2 # Ball will appear in the center of the background
         self.rect.centery = HEIGHT / 2
         self.speed = [0.5, -0.5]
+        self.can_move = False
+
+    def move_to_center(self):
+        self.rect.centerx = WIDTH / 2
+        self.rect.centery = HEIGHT / 2
+        if randint(0,1):
+            self.speed = [0.5, -0.5]
+        else:
+            self.speed = [-0.5, 0.5]
+        self.can_move = False
+
+
+    def move(self):
+        self.can_move = True
+
 
     # Controling ball movement
     def refresh(self, time, paddle_player, paddle_CPU, points):
-        self.rect.centerx += self.speed[0] * time # Basic physics
-        self.rect.centery += self.speed[1] * time
-        # Losing or gaining points
-        if self.rect.left <= 0:
-            points[1] += 1
-        if self.rect.right >= WIDTH:
-            points[0] += 1
-        if self.rect.left <= 0 or self.rect.right >= WIDTH:
-            self.speed[0] = -self.speed[0]
-            self.rect.centerx += self.speed[0] * time
-        if self.rect.top <= 0 or self.rect.bottom >= HEIGHT:
-            self.speed[1] = -self.speed[1]
+        if self.can_move:
+
+            self.rect.centerx += self.speed[0] * time # Basic physics
             self.rect.centery += self.speed[1] * time
-        # Avoiding collision with the paddles
-        if pygame.sprite.collide_rect(self, paddle_player) or pygame.sprite.collide_rect(self, paddle_CPU):
-            self.speed[0] = -self.speed[0]
-            self.rect.centerx += self.speed[0] * time
+            # Losing or gaining points
+
+            if self.rect.left <= 0:
+                points[1] += 1
+                self.move_to_center()
+            if self.rect.right >= WIDTH:
+                points[0] += 1
+                self.move_to_center()
+
+            if self.rect.left <= 0 or self.rect.right >= WIDTH:
+                self.speed[0] = -self.speed[0]
+                self.rect.centerx += self.speed[0] * time
+
+            if self.rect.top <= 0 or self.rect.bottom >= HEIGHT:
+                self.speed[1] = -self.speed[1]
+                self.rect.centery += self.speed[1] * time
+
+            # Avoiding collision with the paddles
+            if pygame.sprite.collide_rect(self, paddle_player) or pygame.sprite.collide_rect(self, paddle_CPU):
+                self.speed[0] = -self.speed[0]
+                self.rect.centerx += self.speed[0] * time
+
 
         return points
 
@@ -131,9 +155,13 @@ def main():
             if event.type == QUIT:
                 sys.exit()
 
-        points = ball.refresh(time, paddle_player, paddle_CPU, points)
-        paddle_player.move(time, pressed_key)
-        paddle_CPU.ia(time, ball)
+        if pressed_key[K_DOWN] or pressed_key[K_UP]:
+            ball.move()
+
+        if ball.can_move:
+            points = ball.refresh(time, paddle_player, paddle_CPU, points)
+            paddle_player.move(time, pressed_key)
+            paddle_CPU.ia(time, ball)
 
         # Showing scores
         font_color = (0, 0, 0)
